@@ -3,11 +3,11 @@ CFLAGS=-g -Wall -I.
 
 all: chip8_emulator
 
-%.o: %.c %.h
+%.o: %.c
 	$(CC) $(CFLAGS) -c $^
 
 chip8_emulator: emulator.o main.c
 	$(CC) $(CFLAGS) -o $@ $^
 
-clean: chip8_emulator
-	rm *.o $@
+clean:
+	rm *.o chip8_emulator
