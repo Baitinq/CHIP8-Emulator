@@ -62,20 +62,6 @@ int emulator_load_rom(Emulator* emulator, char* rom_name)
     return 0;
 }
 
-static void show_screen(Emulator* em)
-{
-    printf("SCREEN: \n");
-    for(int x = 0; x < 64; ++x)
-    {
-        for(int y = 0; y < 32; ++y)
-        {
-            printf("%d ", em->display[x][y]);
-        }
-        printf("\n");
-    }
-    printf("\n");
-}
-
 int emulator_tick(Emulator* emulator)
 {
     uint16_t* pc = &emulator->pc;
@@ -138,30 +124,24 @@ int emulator_tick(Emulator* emulator)
             break;
         case 0xD:
             dbgprintf("DRAW!\n");
-            //show_screen(emulator);
             int x = emulator->regs.V[X] % 64;
             int y = emulator->regs.V[Y] % 32;
-            printf("DRAWING 0x%x AT (%d, %d)\n", emulator->regs.I, x, y);
-
 
             emulator->regs.VF = 0;
 
             for(int row = 0; row < N; ++row)
             {
-                uint8_t pixel = emulator->memory[emulator->regs.I + row];
-                for(int xline = 0; xline < 8; xline++)
-                                {
-                                    if((pixel & (0x80 >> xline)) != 0)
-                                    {
-                                        if(emulator->display[x][y] == 1)
-                                        {
-                                            emulator->regs.V[0xF] = 1;
-                                        }
-                                        emulator->display[x][y] ^= 1;
-                                    }
-                                }
+                uint8_t pixels = emulator->memory[emulator->regs.I + row];
+                for(int offset = 0; offset < 8; ++offset)
+                {
+                    if((pixels & (0x80 >> offset)) != 0)
+                    {
+                        if(emulator->display[x + offset][y + row] == 1)
+                          emulator->regs.V[0xF] = 1;
+                        emulator->display[x + offset][y + row] ^= 1;
+                    }
+                }
             }
-            //show_screen(emulator);
 
             emulator->draw_flag = 1;
             break;

@@ -28,13 +28,6 @@ int main(int argc, char** argv)
     printf("Hello brother!\n");
 
     uint32_t pixels[32 * 64];
-    for(int w = 0; w < 64; ++w)
-        for(int h = 0; h < 32; ++h)
-        {
-            uint8_t pixel = emulator.display[w][h];
-            pixels[64 * h + w] = (0x00FFFFFF * pixel) | 0xFF000000;
-        }
-
     SDL_Event event;
     while(emulator.is_on == 1)
     {
@@ -48,6 +41,16 @@ int main(int argc, char** argv)
 
         if(emulator.draw_flag == 1)
         {
+            //update pixel buffer with the emulator's display pixels
+            for(int w = 0; w < 64; ++w)
+            {
+                for(int h = 0; h < 32; ++h)
+                {
+                    uint8_t pixel = emulator.display[w][h];
+                    pixels[64 * h + w] = (0x00FFFFFF * pixel) | 0xFF000000;
+                }
+            }
+
             SDL_UpdateTexture(texture, NULL, pixels, sizeof(uint32_t) * 64);
             SDL_RenderClear(renderer);
             SDL_RenderCopy(renderer, texture, NULL, NULL);
