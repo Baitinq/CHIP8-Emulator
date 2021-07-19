@@ -13,7 +13,8 @@ int emulator_load_rom(Emulator* emulator, char* rom_name)
     struct stat st;
     fstat(fileno(rom), &st);
 
-    int bytes_read = fread(emulator->memory, 1, st.st_size, rom);
+     //rom loaded after 0x200 into memory
+    int bytes_read = fread(emulator->memory + 0x200, 1, st.st_size, rom);
     if(bytes_read != st.st_size)
     {
         perror("doesnt cuadrar\n");

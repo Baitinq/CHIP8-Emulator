@@ -23,13 +23,17 @@ typedef struct
     uint8_t VD;
     uint8_t VE;
     uint8_t VF; //flag register
+
+    uint16_t I; // index register
 } Registers;
 
 typedef struct
 {
     uint8_t is_on;
-    uint16_t pc;
+    uint16_t pc; //program counter
     Registers regs;
+    uint8_t sp; //stack pointer
+    uint16_t stack[16];
     uint8_t memory[4096];
 } Emulator;
 
