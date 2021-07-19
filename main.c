@@ -21,7 +21,7 @@ int main(int argc, char** argv)
 
     printf("Hello brother!\n");
 
-    /*for(int i = 0; i < 4096; ++i)
+    /*for(int i = 0; i < sizeof(emulator.memory); ++i)
     {
         printf("%c ", emulator.memory[i]);
     }
