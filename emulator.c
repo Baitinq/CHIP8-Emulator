@@ -104,7 +104,7 @@ int emulator_tick(Emulator* emulator)
                 printf("INFINITE LOOP DETECTED! EXITING...\n");
                 emulator_dump_registers(emulator);
                 getchar(); //block
-                exit(0); //stop executing when program over
+                emulator->is_on = 0;
             }
 
             break;
