@@ -16,6 +16,8 @@ int main(int argc, char** argv)
 
     Emulator emulator;
 
+    emulator_initialise(&emulator);
+
     if(emulator_load_rom(&emulator, argv[1]) != 0)
         return 2;
 
@@ -23,7 +25,7 @@ int main(int argc, char** argv)
 
     for(int i = 0; i < sizeof(emulator.memory); ++i)
     {
-        printf("%c ", emulator.memory[i]);
+        printf("0x%x ", emulator.memory[i]);
     }
 
     putchar('\n');

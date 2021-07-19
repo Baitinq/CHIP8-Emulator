@@ -2,7 +2,8 @@
 #define _EMULATOR_H_
 
 #include <stdio.h>
-#include  <sys/stat.h>
+#include <sys/stat.h>
+#include <string.h>
 
 typedef struct
 {
@@ -37,6 +38,7 @@ typedef struct
     uint8_t memory[4096];
 } Emulator;
 
+int emulator_initialise(Emulator* emulator);
 int emulator_load_rom(Emulator* emulator, char* rom_name);
 int emulator_tick(Emulator* emulator);
 
