@@ -1,7 +1,7 @@
 #ifndef _CONFIG_H_
 #define _CONFIG_H_
 
-#define DEBUG 1
+#define DEBUG 0
 
 #define INSTRUCTIONS_PER_SECOND 700
 #define GAME_LOAD_LOCATION 0x200
