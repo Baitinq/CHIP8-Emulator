@@ -46,6 +46,8 @@ int emulator_load_rom(Emulator* emulator, char* rom_name)
 
      //rom loaded after 0x200 into memory
     int bytes_read = fread(emulator->memory + GAME_LOAD_LOCATION, 1, st.st_size, rom);
+    fclose(rom);
+
     if(bytes_read != st.st_size)
     {
         perror("doesnt cuadrar\n");
@@ -59,5 +61,39 @@ int emulator_load_rom(Emulator* emulator, char* rom_name)
 
 int emulator_tick(Emulator* emulator)
 {
+    uint16_t* pc = &emulator->pc;
+    uint16_t instr = (emulator->memory[*pc] << 8) | emulator->memory[*pc + 1];
+    *pc += 2;
+
+    uint8_t first_nibble = (instr >> 12) & 0xf;
+    uint8_t X = (instr & 0x0F00) >> 8; //second_nibble
+    uint8_t Y = (instr & 0x00F0) >> 4; //third_nibble
+    uint8_t N = (instr & 0x000F); //fourth_nibble
+    uint8_t NN = (instr & 0x00FF); //second_byte
+    uint16_t NNN = (instr & 0x0FFF); //last three nibbles
+
+    printf("instr: 0x%x\n", instr);
+    printf("A: 0x%x\nX: 0x%x\nY: 0x%x\nN: 0x%x\nNN: 0x%x\nNNN: 0x%x\n\n", first_nibble, X, Y, N, NN, NNN);
+
+    switch(first_nibble)
+    {
+        case 1:
+            break;
+        case 2:
+            break;
+        case 3:
+            break;
+        case 4:
+            break;
+        case 5:
+            break;
+        case 6:
+            break;
+        case 7:
+            break;
+        case 8:
+            break;
+    }
+
     return 0;
 }
