@@ -28,6 +28,9 @@ int emulator_initialise(Emulator* emulator)
     memcpy(emulator->memory + FONT_LOAD_LOCATION, font, sizeof(font));
     emulator->is_on = 1;
 
+    pthread_t emulator_timers_thread_id;
+    pthread_create(&emulator_timers_thread_id, NULL, &emulator_timers_thread, emulator);
+
     return 0;
 }
 
@@ -131,6 +134,24 @@ int emulator_tick(Emulator* emulator)
     dbgprintf("\n");
 
     return 0;
+}
+
+void* emulator_timers_thread(Emulator* emulator)
+{
+    printf("STARTED TIMERS THREAD\n");
+
+    while(emulator->is_on)
+    {
+        if(emulator->delay_timer > 0)
+            --emulator->delay_timer;
+
+        if(emulator->sound_timer > 0)
+            --emulator->sound_timer;
+
+        usleep(1000000 / 60);
+    }
+
+    return NULL;
 }
 
 void emulator_dump_registers(Emulator* emulator)

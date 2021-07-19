@@ -1,6 +1,3 @@
-#include <stdio.h>
-#include <unistd.h>
-#include <config.h>
 #include <emulator.h>
 
 int main(int argc, char** argv);

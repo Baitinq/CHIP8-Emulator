@@ -4,8 +4,10 @@
 #include <config.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/stat.h>
 #include <string.h>
+#include <unistd.h>
+#include <pthread.h>
+#include <sys/stat.h>
 
 typedef struct
 {
@@ -41,13 +43,14 @@ typedef struct
 
 typedef struct
 {
-    uint8_t is_on;
-    uint16_t pc; //program counter
+    volatile uint8_t is_on;
+    volatile uint8_t delay_timer;
+    volatile uint8_t sound_timer;
+    uint8_t display[64][32];
     Registers regs;
     uint8_t sp; //stack pointer
     uint16_t stack[16];
-    volatile uint8_t delay_timer;
-    volatile uint8_t sound_timer;
+    uint16_t pc; //program counter
     uint8_t memory[4096];
 } Emulator;
 
@@ -55,5 +58,7 @@ int emulator_initialise(Emulator* emulator);
 int emulator_load_rom(Emulator* emulator, char* rom_name);
 int emulator_tick(Emulator* emulator);
 void emulator_dump_registers(Emulator* emulator);
+
+void* emulator_timers_thread();
 
 #endif
