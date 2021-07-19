@@ -2,6 +2,7 @@
 #define _EMULATOR_H_
 
 #include <stdio.h>
+#include <config.h>
 #include <sys/stat.h>
 #include <string.h>
 
@@ -35,6 +36,8 @@ typedef struct
     Registers regs;
     uint8_t sp; //stack pointer
     uint16_t stack[16];
+    volatile uint8_t delay_timer;
+    volatile uint8_t sound_timer;
     uint8_t memory[4096];
 } Emulator;
 

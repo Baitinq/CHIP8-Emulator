@@ -2,7 +2,8 @@
 
 int emulator_initialise(Emulator* emulator)
 {
-    uint8_t font[] = {
+    const uint8_t font[] =
+    {
         0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
         0x20, 0x60, 0x20, 0x20, 0x70, // 1
         0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
@@ -19,11 +20,15 @@ int emulator_initialise(Emulator* emulator)
         0xE0, 0x90, 0x90, 0x90, 0xE0, // D
         0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
         0xF0, 0x80, 0xF0, 0x80, 0x80  // F
-                     };
+    };
 
-        memcpy(emulator->memory + 0x50, font, sizeof(font));
+    //zero out the memory
+    memset(emulator, 0, sizeof(Emulator));
 
-        return 0;
+    memcpy(emulator->memory + FONT_LOAD_LOCATION, font, sizeof(font));
+    emulator->is_on = 1;
+
+    return 0;
 }
 
 int emulator_load_rom(Emulator* emulator, char* rom_name)
@@ -40,12 +45,14 @@ int emulator_load_rom(Emulator* emulator, char* rom_name)
     fstat(fileno(rom), &st);
 
      //rom loaded after 0x200 into memory
-    int bytes_read = fread(emulator->memory + 0x200, 1, st.st_size, rom);
+    int bytes_read = fread(emulator->memory + GAME_LOAD_LOCATION, 1, st.st_size, rom);
     if(bytes_read != st.st_size)
     {
         perror("doesnt cuadrar\n");
         return 2;
     }
+
+    emulator->pc = GAME_LOAD_LOCATION;
 
     return 0;
 }

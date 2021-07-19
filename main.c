@@ -23,14 +23,14 @@ int main(int argc, char** argv)
 
     printf("Hello brother!\n");
 
-    for(int i = 0; i < sizeof(emulator.memory); ++i)
+    /*for(int i = 0; i < sizeof(emulator.memory); ++i)
     {
         printf("0x%x ", emulator.memory[i]);
     }
 
-    putchar('\n');
+    putchar('\n');*/
 
-    while(emulator.is_on)
+    while(emulator.is_on == 1)
     {
         emulator_tick(&emulator);
         usleep(1000000 / INSTRUCTIONS_PER_SECOND);
