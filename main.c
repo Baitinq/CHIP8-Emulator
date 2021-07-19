@@ -35,6 +35,8 @@ int main(int argc, char** argv)
         {
             if(event.type == SDL_QUIT)
                 goto exit;
+            if(event.type == SDL_WINDOWEVENT)
+                SDL_RenderPresent(renderer);
         }
 
         emulator_tick(&emulator);
