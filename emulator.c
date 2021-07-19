@@ -72,8 +72,8 @@ int emulator_tick(Emulator* emulator)
     uint8_t NN = (instr & 0x00FF); //second_byte
     uint16_t NNN = (instr & 0x0FFF); //last three nibbles
 
-    printf("instr: 0x%x\n", instr);
-    printf("A: 0x%x\nX: 0x%x\nY: 0x%x\nN: 0x%x\nNN: 0x%x\nNNN: 0x%x\n", first_nibble, X, Y, N, NN, NNN);
+    dbgprintf("instr: 0x%x\n", instr);
+    dbgprintf("A: 0x%x\nX: 0x%x\nY: 0x%x\nN: 0x%x\nNN: 0x%x\nNNN: 0x%x\n", first_nibble, X, Y, N, NN, NNN);
 
     switch(first_nibble)
     {
@@ -81,15 +81,16 @@ int emulator_tick(Emulator* emulator)
             switch(NNN)
             {
                 case 0x000:
+                    emulator_dump_registers(emulator);
                     exit(1); //stop executing when program over
                 case 0x0E0: //00E0: Clear screen
-                    printf("CLEAR SCREEN!\n");
+                    dbgprintf("CLEAR SCREEN!\n");
                     break;
             }
 
             break;
         case 0x1:
-            printf("JUMP! (0x%x)\n", NNN);
+            dbgprintf("JUMP! (0x%x)\n", NNN);
             emulator->pc = NNN;
             break;
         case 0x2:
@@ -101,17 +102,17 @@ int emulator_tick(Emulator* emulator)
         case 0x5:
             break;
         case 0x6:
-            printf("SET REGISTER VX! (0x%x)\n", NN);
+            dbgprintf("SET REGISTER VX! (0x%x)\n", NN);
             emulator->regs.V[X] = NN;
             break;
         case 0x7:
-            printf("ADD VALUE TO REGISTER VX! (0x%x)\n", NN);
+            dbgprintf("ADD VALUE TO REGISTER VX! (0x%x)\n", NN);
             emulator->regs.V[X] += NN;
             break;
         case 0x8:
             break;
         case 0xA:
-            printf("SET INDEX REGISTER I! (0x%x)\n", NNN);
+            dbgprintf("SET INDEX REGISTER I! (0x%x)\n", NNN);
             emulator->regs.I = NNN;
             break;
         case 0xB:
@@ -119,7 +120,7 @@ int emulator_tick(Emulator* emulator)
         case 0xC:
             break;
         case 0xD:
-            printf("DRAW!\n");
+            dbgprintf("DRAW!\n");
             break;
         case 0xE:
             break;
@@ -127,7 +128,7 @@ int emulator_tick(Emulator* emulator)
             break;
     }
 
-    putchar('\n');
+    dbgprintf("\n");
 
     return 0;
 }

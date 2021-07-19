@@ -23,13 +23,6 @@ int main(int argc, char** argv)
 
     printf("Hello brother!\n");
 
-    /*for(int i = 0; i < sizeof(emulator.memory); ++i)
-    {
-        printf("0x%x ", emulator.memory[i]);
-    }
-
-    putchar('\n');*/
-
     while(emulator.is_on == 1)
     {
         emulator_tick(&emulator);
