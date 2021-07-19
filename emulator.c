@@ -73,27 +73,79 @@ int emulator_tick(Emulator* emulator)
     uint16_t NNN = (instr & 0x0FFF); //last three nibbles
 
     printf("instr: 0x%x\n", instr);
-    printf("A: 0x%x\nX: 0x%x\nY: 0x%x\nN: 0x%x\nNN: 0x%x\nNNN: 0x%x\n\n", first_nibble, X, Y, N, NN, NNN);
+    printf("A: 0x%x\nX: 0x%x\nY: 0x%x\nN: 0x%x\nNN: 0x%x\nNNN: 0x%x\n", first_nibble, X, Y, N, NN, NNN);
 
     switch(first_nibble)
     {
-        case 1:
+        case 0x0:
+            switch(NNN)
+            {
+                case 0x000:
+                    exit(1);
+                case 0x0E0: //00E0: Clear screen
+                    printf("CLEAR SCREEN!\n");
+                    break;
+            }
+
             break;
-        case 2:
+        case 0x1:
+            printf("JUMP! (0x%x)\n", NNN);
             break;
-        case 3:
+        case 0x2:
             break;
-        case 4:
+        case 0x3:
             break;
-        case 5:
+        case 0x4:
             break;
-        case 6:
+        case 0x5:
             break;
-        case 7:
+        case 0x6:
+            printf("SET REGISTER VX! (0x%x)\n", NN);
             break;
-        case 8:
+        case 0x7:
+            printf("ADD VALUE TO REGISTER VX! (0x%x)\n", NN);
+            break;
+        case 0x8:
+            break;
+        case 0xA:
+            printf("SET INDEX REGISTER I! (0x%x)\n", NNN);
+            break;
+        case 0xB:
+            break;
+        case 0xC:
+            break;
+        case 0xD:
+            printf("DRAW!\n");
+            break;
+        case 0xE:
+            break;
+        case 0xF:
             break;
     }
 
+    putchar('\n');
+
     return 0;
+}
+
+void emulator_dump_registers(Emulator* emulator)
+{
+    printf("REGISTERS: \n");
+    printf("\tV0: 0x%x", emulator->regs.V0);
+    printf("\tV1: 0x%x", emulator->regs.V1);
+    printf("\tV2: 0x%x", emulator->regs.V2);
+    printf("\tV3: 0x%x", emulator->regs.V3);
+    printf("\tV4: 0x%x", emulator->regs.V4);
+    printf("\tV5: 0x%x", emulator->regs.V5);
+    printf("\tV6: 0x%x", emulator->regs.V6);
+    printf("\tV7: 0x%x", emulator->regs.V7);
+    printf("\tV8: 0x%x", emulator->regs.V8);
+    printf("\tV9: 0x%x", emulator->regs.V9);
+    printf("\tVA: 0x%x", emulator->regs.VA);
+    printf("\tVB: 0x%x", emulator->regs.VB);
+    printf("\tVC: 0x%x", emulator->regs.VC);
+    printf("\tVD: 0x%x", emulator->regs.VD);
+    printf("\tVE: 0x%x", emulator->regs.VE);
+    printf("\tVF: 0x%x", emulator->regs.VF);
+    printf("\tI: 0x%x", emulator->regs.I);
 }
