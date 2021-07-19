@@ -1,5 +1,5 @@
 CC=egcc
-CFLAGS=-std=c99 -g -Wall -I. -lpthread
+CFLAGS=-std=c99 -g -Wall -I. -lpthread -lSDL2
 
 all: chip8_emulator
 

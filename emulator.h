@@ -44,6 +44,7 @@ typedef struct
 typedef struct
 {
     volatile uint8_t is_on;
+    volatile uint8_t draw_flag;
     volatile uint8_t delay_timer;
     volatile uint8_t sound_timer;
     uint8_t display[64][32];

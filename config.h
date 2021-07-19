@@ -6,6 +6,7 @@
 #define INSTRUCTIONS_PER_SECOND 700
 #define GAME_LOAD_LOCATION 0x200
 #define FONT_LOAD_LOCATION 0x50
+#define PIXEL_RATIO 10
 
 
 #define dbgprintf(fmt, ...) \

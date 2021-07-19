@@ -124,6 +124,7 @@ int emulator_tick(Emulator* emulator)
             break;
         case 0xD:
             dbgprintf("DRAW!\n");
+            emulator->draw_flag = 1;
             break;
         case 0xE:
             break;
