@@ -81,7 +81,7 @@ int emulator_tick(Emulator* emulator)
             switch(NNN)
             {
                 case 0x000:
-                    exit(1);
+                    exit(1); //stop executing when program over
                 case 0x0E0: //00E0: Clear screen
                     printf("CLEAR SCREEN!\n");
                     break;
@@ -90,6 +90,7 @@ int emulator_tick(Emulator* emulator)
             break;
         case 0x1:
             printf("JUMP! (0x%x)\n", NNN);
+            emulator->pc = NNN;
             break;
         case 0x2:
             break;
@@ -101,14 +102,17 @@ int emulator_tick(Emulator* emulator)
             break;
         case 0x6:
             printf("SET REGISTER VX! (0x%x)\n", NN);
+            emulator->regs.V[X] = NN;
             break;
         case 0x7:
             printf("ADD VALUE TO REGISTER VX! (0x%x)\n", NN);
+            emulator->regs.V[X] += NN;
             break;
         case 0x8:
             break;
         case 0xA:
             printf("SET INDEX REGISTER I! (0x%x)\n", NNN);
+            emulator->regs.I = NNN;
             break;
         case 0xB:
             break;
