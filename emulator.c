@@ -71,7 +71,7 @@ int emulator_tick(Emulator* emulator)
 
     uint16_t instr_pc = *pc;
 
-    *pc += 2;
+    emulator_step(emulator);
 
     uint8_t first_nibble = (instr >> 12) & 0xf;
     uint8_t X = (instr & 0x0F00) >> 8; //second_nibble
@@ -121,7 +121,7 @@ int emulator_tick(Emulator* emulator)
             if(emulator->regs.V[X] == NN)
             {
                 dbgprintf("SKIPPED COZ THEY WERE EQUAL!\n");
-                *pc += 2;
+                emulator_step(emulator);
             }
             break;
         case 0x4:
@@ -133,7 +133,7 @@ int emulator_tick(Emulator* emulator)
             if(emulator->regs.V[X] == emulator->regs.V[Y])
             {
                 dbgprintf("SKIPPED COZ THEY WERE EQUAL!\n");
-                *pc += 2;
+                emulator_step(emulator);
             }
             break;
         case 0x6:
@@ -199,7 +199,7 @@ int emulator_tick(Emulator* emulator)
             if(emulator->regs.V[X] != emulator->regs.V[Y])
             {
                 dbgprintf("SKIPPED COZ THEY WERE NOT EQUAL!\n");
-                *pc += 2;
+                emulator_step(emulator);
             }
             break;
         case 0xA:
@@ -279,10 +279,14 @@ int emulator_tick(Emulator* emulator)
     return 0;
 }
 
+void emulator_step(Emulator* emulator)
+{
+    emulator->pc += 2;
+}
+
 void* emulator_timers_thread(Emulator* emulator)
 {
     printf("STARTED TIMERS THREAD\n");
-
     while(emulator->is_on)
     {
         if(emulator->delay_timer > 0)

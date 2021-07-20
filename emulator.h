@@ -59,6 +59,7 @@ typedef struct
 int emulator_initialise(Emulator* emulator);
 int emulator_load_rom(Emulator* emulator, char* rom_name);
 int emulator_tick(Emulator* emulator);
+void emulator_step(Emulator* emulator);
 void emulator_dump_registers(Emulator* emulator);
 
 void* emulator_timers_thread();
