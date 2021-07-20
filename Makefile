@@ -1,5 +1,7 @@
-CC=egcc
-CFLAGS=-std=c99 -g -Wall -I. -lpthread -lSDL2
+CC=clang
+INC_DIRS="."
+CFLAGS=-std=c99 -g -Wall -I$(INC_DIRS)
+LDFLAGS=-lpthread $(shell pkg-config --libs --cflags sdl2)
 
 all: chip8_emulator
 
@@ -7,7 +9,7 @@ all: chip8_emulator
 	$(CC) $(CFLAGS) -c $^
 
 chip8_emulator: emulator.o main.c
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 clean:
 	rm *.o chip8_emulator

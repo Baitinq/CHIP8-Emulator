@@ -1,5 +1,5 @@
 #include <emulator.h>
-#include "/usr/local/include/SDL2/SDL.h"
+#include <SDL.h>
 
 int main(int argc, char** argv);
 void show_help();
@@ -37,6 +37,10 @@ int main(int argc, char** argv)
                 goto exit;
             if(event.type == SDL_WINDOWEVENT)
                 SDL_RenderPresent(renderer);
+            /*if(event.type == SDL_KEYDOWN)
+                emulator_handle_key_press(&emulator, event.key.keysym.sym);
+            if(event.type == SDL_KEYUP)
+                emulator_handle_key_release(&emulator, event.key.keysym.sym);*/
         }
 
         emulator_tick(&emulator);
