@@ -91,6 +91,7 @@ int emulator_tick(Emulator* emulator)
                 case 0x0E0: //00E0: Clear screen
                     dbgprintf("CLEAR SCREEN!\n");
                     memset(emulator->display, 0, sizeof(emulator->display));
+                    emulator->draw_flag = 1;
                     break;
             }
 
@@ -113,16 +114,24 @@ int emulator_tick(Emulator* emulator)
             assert(0);
             break;
         case 0x3:
+            dbgprintf("SKIP INSTR IF REGISTER VX == NN!\n");
             if(emulator->regs.V[X] == NN)
+            {
+                dbgprintf("SKIPPED COZ THEY WERE EQUAL!\n");
                 *pc += 2;
+            }
             break;
         case 0x4:
         printf("TODO: Instr: 0x%x\n", instr);
         assert(0);
             break;
         case 0x5:
+            dbgprintf("SKIP INSTR IF REGISTER VX == VY!\n");
             if(emulator->regs.V[X] == emulator->regs.V[Y])
+            {
+                dbgprintf("SKIPPED COZ THEY WERE EQUAL!\n");
                 *pc += 2;
+            }
             break;
         case 0x6:
             dbgprintf("SET REGISTER VX! (0x%x)\n", NN);
@@ -136,26 +145,28 @@ int emulator_tick(Emulator* emulator)
             switch(N)
             {
                 case 0x0:
-                emulator->regs.V[X] = emulator->regs.V[Y];
-                break;
-            case 0x1:
-            case 0x2:
-            case 0x3:
-                printf("TODO: Instr: 0x%x -- %d\n", instr, N);
-                assert(0);
+                    dbgprintf("SET VX TO VY!\n");
+                    emulator->regs.V[X] = emulator->regs.V[Y];
                     break;
-            case 0x4:
-                if(emulator->regs.V[X] + emulator->regs.V[Y] > 255)
-                    emulator->regs.VF = 1;
-                else
-                    emulator->regs.VF = 0;
+                case 0x1:
+                case 0x2:
+                case 0x3:
+                    printf("TODO: Instr: 0x%x -- %d\n", instr, N);
+                    assert(0);
+                        break;
+                case 0x4:
+                    dbgprintf("ADD VY TO VX!\n");
+                    if(emulator->regs.V[X] + emulator->regs.V[Y] > 255)
+                        emulator->regs.VF = 1;
+                    else
+                        emulator->regs.VF = 0;
 
-                emulator->regs.V[X] += emulator->regs.V[Y];
-                break;
-            case 0x5:
-            case 0x6:
-            case 0xE:
-                break;
+                    emulator->regs.V[X] += emulator->regs.V[Y];
+                    break;
+                case 0x5:
+                case 0x6:
+                case 0xE:
+                    break;
             }
 
             break;
@@ -176,7 +187,6 @@ int emulator_tick(Emulator* emulator)
             int y = emulator->regs.V[Y] % 32;
 
             emulator->regs.VF = 0;
-
             for(int row = 0; row < N; ++row)
             {
                 uint8_t pixels = emulator->memory[emulator->regs.I + row];
