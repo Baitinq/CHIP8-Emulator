@@ -153,9 +153,11 @@ int emulator_tick(Emulator* emulator)
                     break;
                 case 0x1:
                 case 0x2:
+                printf("TODO: Instr: 0x%x -- %d\n", instr, N);
+                assert(0);
+                break;
                 case 0x3:
-                    printf("TODO: Instr: 0x%x -- %d\n", instr, N);
-                    assert(0);
+                        emulator->regs.V[X] ^= emulator->regs.V[Y];
                         break;
                 case 0x4:
                     dbgprintf("ADD VY TO VX!\n");
@@ -164,10 +166,22 @@ int emulator_tick(Emulator* emulator)
                     else
                         emulator->regs.VF = 0;
 
+                    /*
+                     *                     emulator->regs.V[X] += emulator->regs.V[Y];
+                    if(emulator->regs.V[Y] > emulator->regs.V[X])
+                                            emulator->regs.VF = 1; //carry
+                                        else
+                                 emulator->regs.VF = 0; //carry*/
+
                     emulator->regs.V[X] += emulator->regs.V[Y];
                     break;
                 case 0x5:
-                    emulator->regs.V[X] -= emulator->regs.V[Y];
+                    if(emulator->regs.V[X] > emulator->regs.V[Y])
+                        emulator->regs.VF = 1;
+                    else
+                        emulator->regs.VF = 0;
+
+                    emulator->regs.V[X] -= emulator->regs.V[Y];    
                     break;
                 case 0x6:
                 case 0xE:
@@ -226,15 +240,24 @@ int emulator_tick(Emulator* emulator)
         assert(0);
             break;
         case 0xF:
-            switch(N)
+            switch(NN)
             {
-                case 0xE: //FX1E
+                case 0x1E: //FX1E
                     dbgprintf("ADD V[X] to the I register!\n");
+                    if(emulator->regs.I + emulator->regs.V[X] > 0xFFF)
+                        emulator->regs.VF = 1;
+                    else
+                        emulator->regs.VF = 0;
                     emulator->regs.I += emulator->regs.V[X];
                     break;
-            case 0x5: //FX55
+            case 0x55: //FX55
                 for (int i = 0; i <= X; ++i)
                     emulator->memory[emulator->regs.I + i] = emulator->regs.V[i];
+                emulator->regs.I += X + 1;
+                break;
+            case 0x65: //FX65
+                for (int i = 0; i <= X; ++i)
+                    emulator->regs.V[i] = emulator->memory[emulator->regs.I + i];
                 emulator->regs.I += X + 1;
                 break;
                 default:
@@ -249,6 +272,9 @@ int emulator_tick(Emulator* emulator)
     }
 
     dbgprintf("\n");
+
+    if(DEBUG)
+        emulator_dump_registers(emulator);
 
     return 0;
 }
