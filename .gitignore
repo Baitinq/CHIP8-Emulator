@@ -1,3 +1,4 @@
 chip8_emulator
 CHIP8_Emulator.*
 *.o
+*.core
