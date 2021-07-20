@@ -93,6 +93,9 @@ int emulator_tick(Emulator* emulator)
                     memset(emulator->display, 0, sizeof(emulator->display));
                     emulator->draw_flag = 1;
                     break;
+            default:
+                printf("DEFAULT: Instr: 0x%x\n", instr);
+                assert(0);
             }
 
             break;
@@ -164,11 +167,26 @@ int emulator_tick(Emulator* emulator)
                     emulator->regs.V[X] += emulator->regs.V[Y];
                     break;
                 case 0x5:
+                    emulator->regs.V[X] -= emulator->regs.V[Y];
+                    break;
                 case 0x6:
                 case 0xE:
+                printf("TODO: Instr: 0x%x\n", instr);
+                assert(0);
                     break;
+            default:
+                printf("DEFAULT: Instr: 0x%x\n", instr);
+                assert(0);
             }
 
+            break;
+        case 0x9:
+            dbgprintf("SKIP INSTR IF REGISTER VX != VY!\n");
+            if(emulator->regs.V[X] != emulator->regs.V[Y])
+            {
+                dbgprintf("SKIPPED COZ THEY WERE NOT EQUAL!\n");
+                *pc += 2;
+            }
             break;
         case 0xA:
             dbgprintf("SET INDEX REGISTER I! (0x%x)\n", NNN);
@@ -204,9 +222,30 @@ int emulator_tick(Emulator* emulator)
             emulator->draw_flag = 1;
             break;
         case 0xE:
+        printf("TODO: Instr: 0x%x\n", instr);
+        assert(0);
             break;
         case 0xF:
+            switch(N)
+            {
+                case 0xE: //FX1E
+                    dbgprintf("ADD V[X] to the I register!\n");
+                    emulator->regs.I += emulator->regs.V[X];
+                    break;
+            case 0x5: //FX55
+                for (int i = 0; i <= X; ++i)
+                    emulator->memory[emulator->regs.I + i] = emulator->regs.V[i];
+                emulator->regs.I += X + 1;
+                break;
+                default:
+                printf("DEFAULT: Instr: 0x%x\n", instr);
+                assert(0);
+            }
+
             break;
+    default:
+        printf("DEFAULT!: Instr: 0x%x -- %d\n", instr, N);
+        assert(0);
     }
 
     dbgprintf("\n");
@@ -224,7 +263,10 @@ void* emulator_timers_thread(Emulator* emulator)
             --emulator->delay_timer;
 
         if(emulator->sound_timer > 0)
+        {
+            printf("lower timer!\n");
             --emulator->sound_timer;
+        }
 
         usleep(1000000 / 60);
     }
