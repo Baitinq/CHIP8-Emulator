@@ -93,6 +93,10 @@ int emulator_tick(Emulator* emulator)
                     memset(emulator->display, 0, sizeof(emulator->display));
                     emulator->draw_flag = 1;
                     break;
+                case 0x0EE: //00EE: Return from subroutine
+                    //pop callee pc from stack and set current pc to it
+                    emulator->pc = emulator->stack[--emulator->sp];
+                    break;
             default:
                 printf("DEFAULT: Instr: 0x%x\n", instr);
                 assert(0);
@@ -113,8 +117,11 @@ int emulator_tick(Emulator* emulator)
 
             break;
         case 0x2:
-            printf("TODO: Instr: 0x%x\n", instr);
-            assert(0);
+            dbgprintf("CALL SUBROUTINE! (0x%x)\n", NNN);
+            //push pc to stack and increment sp
+            emulator->stack[emulator->sp++] = emulator->pc;
+
+            emulator->pc = NNN;
             break;
         case 0x3:
             dbgprintf("SKIP INSTR IF REGISTER VX == NN!\n");
@@ -260,7 +267,15 @@ int emulator_tick(Emulator* emulator)
                     emulator->regs.V[i] = emulator->memory[emulator->regs.I + i];
                 emulator->regs.I += X + 1;
                 break;
-                default:
+            case 0x15: //FX15
+                dbgprintf("SET THE DELAY TIMER TO V[X]!\n");
+                emulator->delay_timer = emulator->regs.V[X];
+                break;
+            case 0x07: //FX07
+                dbgprintf("SET V[X] TO THE DELAY TIMER!\n");
+                emulator->regs.V[X] = emulator->delay_timer;
+                break;
+            default:
                 printf("DEFAULT: Instr: 0x%x\n", instr);
                 assert(0);
             }
