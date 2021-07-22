@@ -29,6 +29,23 @@ int emulator_initialise(Emulator* emulator)
 
     memcpy(emulator->memory + FONT_LOAD_LOCATION, font, sizeof(font));
     emulator->is_on = 1;
+    emulator->keys[0].value = '1'; //1
+    emulator->keys[1].value = '2'; //2
+    emulator->keys[2].value = '3'; //3
+    emulator->keys[3].value = '4'; //4
+    emulator->keys[4].value = 'q'; //Q
+    emulator->keys[5].value = 'w'; //W
+    emulator->keys[6].value = 'e'; //E
+    emulator->keys[7].value = 'r'; //R
+    emulator->keys[8].value = 'a'; //A
+    emulator->keys[9].value = 's'; //S
+    emulator->keys[10].value = 's'; //D
+    emulator->keys[11].value = 'f'; //F
+    emulator->keys[12].value = 'z'; //Z
+    emulator->keys[13].value = 'x'; //X
+    emulator->keys[14].value = 'c'; //C
+    emulator->keys[15].value = 'v'; //V
+
 
     pthread_t emulator_timers_thread_id;
     pthread_create(&emulator_timers_thread_id, NULL, &emulator_timers_thread, emulator);
@@ -60,6 +77,38 @@ int emulator_load_rom(Emulator* emulator, char* rom_name)
     }
 
     emulator->pc = GAME_LOAD_LOCATION;
+
+    return 0;
+}
+
+int emulator_handle_key_press(Emulator* emulator, uint8_t key)
+{
+    for(size_t i = 0; i < (sizeof(emulator->keys) / sizeof(emulator->keys[0])); ++i)
+    {
+        if(emulator->keys[i].value == key)
+        {
+            printf("KEY ACTIVATED: %c-%d!\n", key, key);
+            //sleep(2);
+            emulator->keys[i].activated = 1;
+            break;
+        }
+    }
+
+    return 0;
+}
+
+int emulator_handle_key_release(Emulator* emulator, uint8_t key)
+{
+    for(size_t i = 0; i < (sizeof(emulator->keys) / sizeof(emulator->keys[0])); ++i)
+    {
+        if(emulator->keys[i].value == key)
+        {
+            printf("KEY RELEASE: %c-%d!\n", key, key);
+            //sleep(2);
+            emulator->keys[i].activated = 0;
+            break;
+        }
+    }
 
     return 0;
 }
@@ -273,6 +322,28 @@ int emulator_tick(Emulator* emulator)
             case 0x07: //FX07
                 dbgprintf("SET V[X] TO THE DELAY TIMER!\n");
                 emulator->regs.V[X] = emulator->delay_timer;
+                break;
+            case 0x0A:
+            {
+                uint8_t key_pressed = 0;
+                for(size_t i = 0; i < (sizeof(emulator->keys) / sizeof(emulator->keys[0])); ++i)
+                {
+                    if(emulator->keys[i].activated == 1)
+                    {
+                        emulator->regs.V[X] = i;
+                        key_pressed = 1;
+                        break;
+                    }
+
+                }
+
+                if(!key_pressed)
+                   *pc -= 2; //block (loop)
+            }
+                break;
+            case 0x29:
+                printf("TODO: Instr: 0x%x\n", instr);
+                assert(0);
                 break;
             default:
                 printf("DEFAULT: Instr: 0x%x\n", instr);

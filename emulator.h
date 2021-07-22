@@ -44,11 +44,18 @@ typedef struct
 
 typedef struct
 {
+    uint8_t activated;
+    uint8_t value;
+} Key;
+
+typedef struct
+{
     volatile uint8_t is_on;
     volatile uint8_t draw_flag;
     volatile uint8_t delay_timer;
     volatile uint8_t sound_timer;
     uint8_t display[64][32];
+    Key keys[16];
     Registers regs;
     uint8_t sp; //stack pointer
     uint16_t stack[16];
@@ -61,6 +68,9 @@ int emulator_load_rom(Emulator* emulator, char* rom_name);
 int emulator_tick(Emulator* emulator);
 void emulator_step(Emulator* emulator);
 void emulator_dump_registers(Emulator* emulator);
+
+int emulator_handle_key_press(Emulator* emulator, uint8_t key);
+int emulator_handle_key_release(Emulator* emulator, uint8_t key);
 
 void* emulator_timers_thread();
 
