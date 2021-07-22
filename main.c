@@ -64,7 +64,7 @@ int main(int argc, char** argv)
             emulator.draw_flag = 0;
         }
 
-        usleep(1000000 / INSTRUCTIONS_PER_SECOND);
+        //usleep(1000000 / INSTRUCTIONS_PER_SECOND);
     }
 
     exit:

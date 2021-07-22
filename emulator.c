@@ -132,8 +132,12 @@ int emulator_tick(Emulator* emulator)
             }
             break;
         case 0x4:
-        printf("TODO: Instr: 0x%x\n", instr);
-        assert(0);
+            dbgprintf("SKIP INSTR IF REGISTER VX != NN!\n");
+            if(emulator->regs.V[X] != NN)
+            {
+                dbgprintf("SKIPPED COZ THEY WERE NOT EQUAL!\n");
+                emulator_step(emulator);
+            }
             break;
         case 0x5:
             dbgprintf("SKIP INSTR IF REGISTER VX == VY!\n");
@@ -159,28 +163,23 @@ int emulator_tick(Emulator* emulator)
                     emulator->regs.V[X] = emulator->regs.V[Y];
                     break;
                 case 0x1:
-                case 0x2:
                 printf("TODO: Instr: 0x%x -- %d\n", instr, N);
                 assert(0);
                 break;
+                case 0x2:
+                    emulator->regs.V[X] &= emulator->regs.V[Y];
+                    break;
                 case 0x3:
                         emulator->regs.V[X] ^= emulator->regs.V[Y];
                         break;
                 case 0x4:
                     dbgprintf("ADD VY TO VX!\n");
-                    if(emulator->regs.V[X] + emulator->regs.V[Y] > 255)
-                        emulator->regs.VF = 1;
+                    emulator->regs.V[X] += emulator->regs.V[Y];
+                    if(emulator->regs.V[Y] > emulator->regs.V[X])
+                        emulator->regs.VF = 1; //carry
                     else
                         emulator->regs.VF = 0;
 
-                    /*
-                     *                     emulator->regs.V[X] += emulator->regs.V[Y];
-                    if(emulator->regs.V[Y] > emulator->regs.V[X])
-                                            emulator->regs.VF = 1; //carry
-                                        else
-                                 emulator->regs.VF = 0; //carry*/
-
-                    emulator->regs.V[X] += emulator->regs.V[Y];
                     break;
                 case 0x5:
                     if(emulator->regs.V[X] > emulator->regs.V[Y])
