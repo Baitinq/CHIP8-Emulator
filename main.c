@@ -22,6 +22,7 @@ int main(int argc, char** argv)
 
     emulator_initialise(&emulator);
 
+    load:
     if(emulator_load_rom(&emulator, argv[1]) != 0)
         return 2;
 
@@ -38,7 +39,18 @@ int main(int argc, char** argv)
             if(event.type == SDL_WINDOWEVENT)
                 SDL_RenderPresent(renderer);
             if(event.type == SDL_KEYDOWN)
-                emulator_handle_key_press(&emulator, event.key.keysym.sym);
+            {
+                switch(event.key.keysym.sym)
+                {
+                    case SDLK_ESCAPE:
+                        goto exit;
+                    case SDLK_F5:
+                        goto load;
+                    default:
+                        emulator_handle_key_press(&emulator, event.key.keysym.sym);
+                }
+
+            }
             if(event.type == SDL_KEYUP)
                 emulator_handle_key_release(&emulator, event.key.keysym.sym);
         }
@@ -53,7 +65,7 @@ int main(int argc, char** argv)
                 for(int h = 0; h < 32; ++h)
                 {
                     uint8_t pixel = emulator.display[w][h];
-                    pixels[64 * h + w] = (0x00FFFFFF * pixel) | 0xFF000000;
+                    pixels[64 * h + w] = (0x00FFFFFF * pixel) | 0xFF000000; //TODO: make colors customizable in config.h
                 }
             }
 
