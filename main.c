@@ -65,7 +65,7 @@ int main(int argc, char** argv)
                 for(int h = 0; h < 32; ++h)
                 {
                     uint8_t pixel = emulator.display[w][h];
-                    pixels[64 * h + w] = (0x00FFFFFF * pixel) | 0xFF000000; //TODO: make colors customizable in config.h
+                    pixels[64 * h + w] = (FOREGROUND_COLOR * pixel) | BLACKGROUND_COLOR;
                 }
             }
 
