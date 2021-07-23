@@ -28,7 +28,9 @@ int emulator_initialise(Emulator* emulator)
     memset(emulator, 0, sizeof(Emulator));
 
     memcpy(emulator->memory + FONT_LOAD_LOCATION, font, sizeof(font));
+
     emulator->is_on = 1;
+
     emulator->keys[0].value = 'x'; //O
     emulator->keys[1].value = '1'; //1
     emulator->keys[2].value = '2'; //2
@@ -45,7 +47,6 @@ int emulator_initialise(Emulator* emulator)
     emulator->keys[13].value = 'r'; //D
     emulator->keys[14].value = 'f'; //E
     emulator->keys[15].value = 'v'; //F
-
 
     pthread_t emulator_timers_thread_id;
     pthread_create(&emulator_timers_thread_id, NULL, &emulator_timers_thread, emulator);
@@ -87,7 +88,7 @@ int emulator_handle_key_press(Emulator* emulator, uint8_t key)
     {
         if(emulator->keys[i].value == key)
         {
-            printf("KEY ACTIVATED: %c-%d!\n", key, key);
+            dbgprintf("KEY ACTIVATED: %c-%d!\n", key, key);
             emulator->keys[i].activated = 1;
             break;
         }
@@ -102,7 +103,7 @@ int emulator_handle_key_release(Emulator* emulator, uint8_t key)
     {
         if(emulator->keys[i].value == key)
         {
-            printf("KEY RELEASE: %c-%d!\n", key, key);
+            dbgprintf("KEY RELEASE: %c-%d!\n", key, key);
             emulator->keys[i].activated = 0;
             break;
         }
@@ -292,8 +293,18 @@ int emulator_tick(Emulator* emulator)
             emulator->draw_flag = 1;
             break;
         case 0xE:
-        printf("TODO: Instr: 0x%x\n", instr);
-        assert(0);
+            switch(NN)
+            {
+                case 0xA1:
+                    //skip if key not pressed
+                    if(emulator->keys[emulator->regs.V[X]].activated == 0)
+                        *pc += 2;
+                    break;
+                default:
+                    printf("DEFAULT: Instr: 0x%x\n", instr);
+                    assert(0);
+            }
+
             break;
         case 0xF:
             switch(NN)
@@ -324,6 +335,21 @@ int emulator_tick(Emulator* emulator)
                 dbgprintf("SET V[X] TO THE DELAY TIMER!\n");
                 emulator->regs.V[X] = emulator->delay_timer;
                 break;
+            case 0x18: //FX18
+                dbgprintf("SET THE SOUND TIMER TO V[X]!\n");
+                emulator->sound_timer = emulator->regs.V[X];
+                break;
+            case 0x33: //FX33
+            {
+                uint8_t number = emulator->regs.V[X];
+                for(uint8_t offset = 2; number > 0; --offset)
+                {
+                    emulator->memory[emulator->regs.I + offset] = number % 10; //last digit
+                    number /= 10;
+                }
+
+                break;
+            }
             case 0x0A:
             {
                 uint8_t key_pressed = 0;
@@ -375,15 +401,16 @@ void* emulator_timers_thread(Emulator* emulator)
     while(emulator->is_on)
     {
         if(emulator->delay_timer > 0)
-            --emulator->delay_timer;
-
-        if(emulator->sound_timer > 0)
         {
             printf("lower timer!\n");
-            --emulator->sound_timer;
+            --emulator->delay_timer;
         }
 
-        usleep(1000000 / TIMERS_THREAD_FREQUENCY);
+        if(emulator->sound_timer > 0)
+            --emulator->sound_timer;
+
+        if(!DEBUG)
+            usleep(1000000 / TIMERS_THREAD_FREQUENCY);
     }
 
     return NULL;
