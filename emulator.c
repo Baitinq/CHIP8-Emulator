@@ -211,9 +211,8 @@ int emulator_tick(Emulator* emulator)
                     emulator->regs.V[X] = emulator->regs.V[Y];
                     break;
                 case 0x1:
-                printf("TODO: Instr: 0x%x -- %d\n", instr, N);
-                assert(0);
-                break;
+                    emulator->regs.V[X] |= emulator->regs.V[Y];
+                    break;
                 case 0x2:
                     emulator->regs.V[X] &= emulator->regs.V[Y];
                     break;
@@ -240,6 +239,13 @@ int emulator_tick(Emulator* emulator)
                 case 0x6:
                     emulator->regs.V[X] = emulator->regs.V[X] >> 1;
                     emulator->regs.VF = N == 0x1 ? 1 : 0;
+                    break;
+                case 0x7:
+                    if(emulator->regs.V[Y] > emulator->regs.V[X])
+                        emulator->regs.VF = 1;
+                    else
+                        emulator->regs.VF = 0;
+                    emulator->regs.V[X] = emulator->regs.V[Y] - emulator->regs.V[X];
                     break;
                 case 0xE:
                     emulator->regs.V[X] = emulator->regs.V[X] << 1;
@@ -295,9 +301,14 @@ int emulator_tick(Emulator* emulator)
         case 0xE:
             switch(NN)
             {
-                case 0xA1:
+                case 0xA1: //EX9E
                     //skip if key not pressed
                     if(emulator->keys[emulator->regs.V[X]].activated == 0)
+                        *pc += 2;
+                    break;
+                case 0x9E: //EX9E
+                    //skip if key pressed
+                    if(emulator->keys[emulator->regs.V[X]].activated == 1)
                         *pc += 2;
                     break;
                 default:
@@ -402,7 +413,7 @@ void* emulator_timers_thread(Emulator* emulator)
     {
         if(emulator->delay_timer > 0)
         {
-            printf("lower timer!\n");
+            dbgprintf("lower timer!\n");
             --emulator->delay_timer;
         }
 

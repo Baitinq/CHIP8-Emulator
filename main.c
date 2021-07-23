@@ -2,7 +2,7 @@
 #include <SDL.h>
 
 int main(int argc, char** argv);
-void show_help();
+static void show_help();
 
 int main(int argc, char** argv)
 {
@@ -89,7 +89,7 @@ int main(int argc, char** argv)
     return 0;
 }
 
-void show_help()
+static void show_help()
 {
     printf("BAD USAGE! -> ./chip8_emulator [ROM]\n");
 }
