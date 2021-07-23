@@ -29,22 +29,22 @@ int emulator_initialise(Emulator* emulator)
 
     memcpy(emulator->memory + FONT_LOAD_LOCATION, font, sizeof(font));
     emulator->is_on = 1;
-    emulator->keys[0].value = '1'; //1
-    emulator->keys[1].value = '2'; //2
-    emulator->keys[2].value = '3'; //3
-    emulator->keys[3].value = '4'; //4
-    emulator->keys[4].value = 'q'; //Q
-    emulator->keys[5].value = 'w'; //W
-    emulator->keys[6].value = 'e'; //E
-    emulator->keys[7].value = 'r'; //R
-    emulator->keys[8].value = 'a'; //A
-    emulator->keys[9].value = 's'; //S
-    emulator->keys[10].value = 's'; //D
-    emulator->keys[11].value = 'f'; //F
-    emulator->keys[12].value = 'z'; //Z
-    emulator->keys[13].value = 'x'; //X
-    emulator->keys[14].value = 'c'; //C
-    emulator->keys[15].value = 'v'; //V
+    emulator->keys[0].value = 'x'; //O
+    emulator->keys[1].value = '1'; //1
+    emulator->keys[2].value = '2'; //2
+    emulator->keys[3].value = '3'; //3
+    emulator->keys[4].value = 'q'; //4
+    emulator->keys[5].value = 'w'; //5
+    emulator->keys[6].value = 'e'; //6
+    emulator->keys[7].value = 'a'; //7
+    emulator->keys[8].value = 's'; //8
+    emulator->keys[9].value = 'd'; //9
+    emulator->keys[10].value = 'z'; //D
+    emulator->keys[11].value = 'c'; //B
+    emulator->keys[12].value = '4'; //C
+    emulator->keys[13].value = 'r'; //D
+    emulator->keys[14].value = 'f'; //E
+    emulator->keys[15].value = 'v'; //F
 
 
     pthread_t emulator_timers_thread_id;
@@ -88,7 +88,6 @@ int emulator_handle_key_press(Emulator* emulator, uint8_t key)
         if(emulator->keys[i].value == key)
         {
             printf("KEY ACTIVATED: %c-%d!\n", key, key);
-            //sleep(2);
             emulator->keys[i].activated = 1;
             break;
         }
@@ -104,7 +103,6 @@ int emulator_handle_key_release(Emulator* emulator, uint8_t key)
         if(emulator->keys[i].value == key)
         {
             printf("KEY RELEASE: %c-%d!\n", key, key);
-            //sleep(2);
             emulator->keys[i].activated = 0;
             break;
         }
@@ -239,9 +237,12 @@ int emulator_tick(Emulator* emulator)
                     emulator->regs.V[X] -= emulator->regs.V[Y];    
                     break;
                 case 0x6:
+                    emulator->regs.V[X] = emulator->regs.V[X] >> 1;
+                    emulator->regs.VF = N == 0x1 ? 1 : 0;
+                    break;
                 case 0xE:
-                printf("TODO: Instr: 0x%x\n", instr);
-                assert(0);
+                    emulator->regs.V[X] = emulator->regs.V[X] << 1;
+                    emulator->regs.VF = first_nibble == 0x1 ? 1 : 0;
                     break;
             default:
                 printf("DEFAULT: Instr: 0x%x\n", instr);
@@ -326,7 +327,7 @@ int emulator_tick(Emulator* emulator)
             case 0x0A:
             {
                 uint8_t key_pressed = 0;
-                for(size_t i = 0; i < (sizeof(emulator->keys) / sizeof(emulator->keys[0])); ++i)
+                for(uint8_t i = 0; i < (sizeof(emulator->keys) / sizeof(emulator->keys[0])); ++i)
                 {
                     if(emulator->keys[i].activated == 1)
                     {
@@ -342,8 +343,7 @@ int emulator_tick(Emulator* emulator)
             }
                 break;
             case 0x29:
-                printf("TODO: Instr: 0x%x\n", instr);
-                assert(0);
+                emulator->regs.I = emulator->regs.V[X] * 0x5 + FONT_LOAD_LOCATION;
                 break;
             default:
                 printf("DEFAULT: Instr: 0x%x\n", instr);
@@ -383,7 +383,7 @@ void* emulator_timers_thread(Emulator* emulator)
             --emulator->sound_timer;
         }
 
-        usleep(1000000 / 60);
+        usleep(1000000 / TIMERS_THREAD_FREQUENCY);
     }
 
     return NULL;
