@@ -48,8 +48,17 @@ int emulator_initialise(Emulator* emulator)
     emulator->keys[14].value = 'f'; //E
     emulator->keys[15].value = 'v'; //F
 
-    pthread_t emulator_timers_thread_id;
-    pthread_create(&emulator_timers_thread_id, NULL, &emulator_timers_thread, emulator);
+    pthread_create(&emulator->timers_thread, NULL, &emulator_timers_thread, emulator);
+
+    return 0;
+}
+
+int emulator_deinitialise(Emulator* emulator)
+{
+    //join timers thread
+    emulator->is_on = 0;
+
+    pthread_join(emulator->timers_thread, NULL);
 
     return 0;
 }
@@ -155,14 +164,16 @@ int emulator_tick(Emulator* emulator)
             dbgprintf("JUMP! (0x%x)\n", NNN);
             emulator->pc = NNN;
 
+#ifdef STOP_ON_INFINITE_LOOP
             if(NNN == instr_pc) //infinite loop
             {
                 printf("INFINITE LOOP DETECTED! EXITING...\n");
                 emulator_dump_registers(emulator);
-                getchar(); //block
+                sleep(2);
+                //getchar(); //block
                 emulator->is_on = 0;
             }
-
+#endif
             break;
         case 0x2:
             dbgprintf("CALL SUBROUTINE! (0x%x)\n", NNN);

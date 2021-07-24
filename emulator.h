@@ -54,6 +54,7 @@ typedef struct
     volatile uint8_t draw_flag;
     volatile uint8_t delay_timer;
     volatile uint8_t sound_timer;
+    pthread_t timers_thread;
     uint8_t display[64][32];
     Key keys[16];
     Registers regs;
@@ -64,6 +65,7 @@ typedef struct
 } Emulator;
 
 int emulator_initialise(Emulator* emulator);
+int emulator_deinitialise(Emulator* emulator);
 int emulator_load_rom(Emulator* emulator, char* rom_name);
 int emulator_tick(Emulator* emulator);
 void emulator_step(Emulator* emulator);

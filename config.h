@@ -2,6 +2,7 @@
 #define _CONFIG_H_
 
 #define DEBUG 1
+//#define STOP_ON_INFINITE_LOOP
 
 #define SCREEN_WIDTH 852
 #define SCREEN_HEIGHT 480

@@ -12,7 +12,6 @@ int main(int argc, char** argv)
         return 1;
     }
 
-
     SDL_Init(SDL_INIT_VIDEO);
     SDL_Window * window = SDL_CreateWindow("CHIP8 Emulator", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, 0);
@@ -20,9 +19,9 @@ int main(int argc, char** argv)
 
     Emulator emulator;
 
+    load:
     emulator_initialise(&emulator);
 
-    load:
     if(emulator_load_rom(&emulator, argv[1]) != 0)
         return 2;
 
@@ -30,7 +29,7 @@ int main(int argc, char** argv)
 
     uint32_t pixels[32 * 64];
     SDL_Event event;
-    while(emulator.is_on == 1)
+    while(emulator.is_on)
     {
         while(SDL_PollEvent(&event))
         {
@@ -45,7 +44,8 @@ int main(int argc, char** argv)
                     case SDLK_ESCAPE:
                         goto exit;
                     case SDLK_F5:
-                        goto load;
+                        emulator_deinitialise(&emulator);
+                        goto load; //join thread or smth??
                     default:
                         emulator_handle_key_press(&emulator, event.key.keysym.sym);
                 }
@@ -85,6 +85,8 @@ int main(int argc, char** argv)
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
+
+    emulator_deinitialise(&emulator);
 
     return 0;
 }
