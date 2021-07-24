@@ -2,6 +2,7 @@
 #define _CONFIG_H_
 
 #define DEBUG 1
+#define COSMAC_VIP_COMPATIBILITY 1 //if set to != 0 it will change the emulator to work with Cosmac VIP era's games
 //#define STOP_ON_INFINITE_LOOP
 
 #define SCREEN_WIDTH 852
@@ -17,5 +18,7 @@
 
 #define dbgprintf(fmt, ...) \
      do { if(DEBUG) fprintf (stdout, fmt, ##__VA_ARGS__); } while(0)
+#define COSMAC_VIP(code) \
+     do { if(COSMAC_VIP_COMPATIBILITY) code else ; } while(0);
 
 #endif

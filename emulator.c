@@ -248,8 +248,8 @@ int emulator_tick(Emulator* emulator)
                     emulator->regs.V[X] -= emulator->regs.V[Y];    
                     break;
                 case 0x6:
-                    emulator->regs.V[X] = emulator->regs.V[X] >> 1;
-                    emulator->regs.VF = N == 0x1 ? 1 : 0;
+                    emulator->regs.VF = emulator->regs.V[X] & 0x1;
+                    emulator->regs.V[X] >>= 1;
                     break;
                 case 0x7:
                     if(emulator->regs.V[Y] > emulator->regs.V[X])
@@ -259,8 +259,8 @@ int emulator_tick(Emulator* emulator)
                     emulator->regs.V[X] = emulator->regs.V[Y] - emulator->regs.V[X];
                     break;
                 case 0xE:
-                    emulator->regs.V[X] = emulator->regs.V[X] << 1;
-                    emulator->regs.VF = first_nibble == 0x1 ? 1 : 0;
+                    emulator->regs.VF = emulator->regs.V[X] >> 7;
+                    emulator->regs.V[X] <<= 1;
                     break;
             default:
                 printf("DEFAULT: Instr: 0x%x\n", instr);
@@ -342,12 +342,12 @@ int emulator_tick(Emulator* emulator)
             case 0x55: //FX55
                 for (int i = 0; i <= X; ++i)
                     emulator->memory[emulator->regs.I + i] = emulator->regs.V[i];
-                emulator->regs.I += X + 1;
+                COSMAC_VIP(emulator->regs.I += X + 1;)
                 break;
             case 0x65: //FX65
                 for (int i = 0; i <= X; ++i)
                     emulator->regs.V[i] = emulator->memory[emulator->regs.I + i];
-                emulator->regs.I += X + 1;
+                COSMAC_VIP(emulator->regs.I += X + 1;)
                 break;
             case 0x15: //FX15
                 dbgprintf("SET THE DELAY TIMER TO V[X]!\n");
